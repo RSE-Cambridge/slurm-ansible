@@ -1,0 +1,12 @@
+---
+
+- name: Slurm group
+  group:
+    name: slurm
+    gid: 8900
+
+- name: Slurm user
+  user:
+    name: slurm
+    uid: 8900
+    group: slurm

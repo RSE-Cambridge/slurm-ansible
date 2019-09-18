@@ -1,0 +1,19 @@
+---
+
+- name: Install Slurm packages on workers
+  yum:
+    name:
+      - "/root/rpmbuild/RPMS/x86_64/slurm-slurmd-{{ slurm_version }}-1.el7.x86_64.rpm"
+    state: present
+
+- name: slurm.conf
+  template:
+    src: slurm.conf.j2
+    dest: /etc/slurm/slurm.conf
+  notify: Restart slurmd
+
+- name: Start slurmd
+  systemd:
+    name: slurmd
+    state: started
+    enabled: yes

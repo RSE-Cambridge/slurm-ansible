@@ -1,0 +1,41 @@
+---
+
+- name: Create munge key
+  shell: create-munge-key
+  args:
+    creates: /etc/munge/munge.key
+  when: "'slurm_master' in group_names"
+
+- name: Fetch munge key
+  fetch:
+    src: /etc/munge/munge.key
+    dest: tmp.munge
+  when: "'slurm_master' in group_names"
+  changed_when: false
+  check_mode: false
+
+- name: Distribute munge key
+  copy:
+    src: "tmp.munge/{{ groups.slurm_master | first }}/etc/munge/munge.key"
+    dest: /etc/munge/munge.key
+    owner: munge
+    group: munge
+    mode: 0600
+  notify: Restart munge
+  when: "'slurm_workers' in group_names"
+
+- name: Remove tmp file
+  delegate_to: localhost
+  become: false
+  run_once: true
+  file:
+    path: tmp.munge
+    state: absent
+  changed_when: false
+  check_mode: false
+
+- name: Start munge
+  systemd:
+    name: munge
+    state: started
+    enabled: yes

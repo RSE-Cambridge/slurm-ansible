@@ -1,0 +1,12 @@
+---
+
+- name: Download Slurm
+  get_url:
+    url: "https://download.schedmd.com/slurm/slurm-{{ slurm_version }}.tar.bz2"
+    dest: "/root/slurm-{{ slurm_version }}.tar.bz2"
+    checksum: "{{ slurm_checksum }}"
+
+- name: Build Slurm RPM
+  shell: "rpmbuild -ta /root/slurm-{{ slurm_version }}.tar.bz2"
+  args:
+    creates: "/root/rpmbuild/RPMS/x86_64/slurm-{{ slurm_version }}-1.el7.x86_64.rpm"

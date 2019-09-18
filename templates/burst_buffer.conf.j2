@@ -1,0 +1,13 @@
+#AllowUsers=root,slurm
+Flags=EnablePersistent,PrivateData
+
+#SetExecHost,PrivateData
+
+StageInTimeout=3600
+StageOutTimeout=3600
+OtherTimeout=3600
+
+DefaultPool=default
+
+GetSysState=/usr/local/bin/dacctl
+GetSysStatus=/usr/local/bin/dacctl

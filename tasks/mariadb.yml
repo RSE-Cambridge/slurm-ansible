@@ -1,0 +1,24 @@
+---
+
+- name: Install required packages
+  yum:
+    name:
+      - mariadb-server
+      - MySQL-python
+      - python2-PyMySQL
+    state: present
+
+- name: Start mariadb
+  systemd:
+    name: mariadb
+    state: started
+    enabled: yes
+
+- name: Create slurm database
+  mysql_db:
+    name: slurm_acct_db
+
+- name: Create slurm database user
+  mysql_user:
+    name: slurm
+    priv: 'slurm_acct_db.*:ALL,GRANT'

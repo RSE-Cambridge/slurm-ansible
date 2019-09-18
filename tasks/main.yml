@@ -1,0 +1,56 @@
+---
+
+- name: Install required packages
+  yum:
+    name:
+      - gcc
+      - json-c-devel
+      - mariadb-devel
+      - munge
+      - munge-devel
+      - munge-libs
+      - openssl-devel
+      - pam-devel
+      - perl-DBI
+      - perl-ExtUtils-MakeMaker
+      - perl-Switch
+      - readline-devel
+      - rpm-build
+    state: present
+
+- include_tasks: slurm_user.yml
+
+- include_tasks: slurm_build.yml
+
+- name: Install core Slurm packages
+  yum:
+    name:
+      - "/root/rpmbuild/RPMS/x86_64/slurm-{{ slurm_version }}-1.el7.x86_64.rpm"
+    state: present
+
+- name: Slurm config directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /etc/slurm
+
+- name: Slurm working directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: slurm
+    group: slurm
+  with_items:
+    - /var/spool/slurm
+
+- include_tasks: munge.yml
+
+- include_tasks: mariadb.yml
+  when: "'slurm_master' in group_names"
+
+- include_tasks: slurm_master.yml
+  when: "'slurm_master' in group_names"
+
+- include_tasks: slurm_workers.yml
+  when: "'slurm_workers' in group_names"

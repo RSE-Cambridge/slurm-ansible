@@ -1,0 +1,35 @@
+---
+
+- name: Install Slurm packages on master
+  yum:
+    name:
+      - "/root/rpmbuild/RPMS/x86_64/slurm-slurmdbd-{{ slurm_version }}-1.el7.x86_64.rpm"
+      - "/root/rpmbuild/RPMS/x86_64/slurm-slurmctld-{{ slurm_version }}-1.el7.x86_64.rpm"
+    state: present
+
+- name: slurm.conf
+  template:
+    src: slurm.conf.j2
+    dest: /etc/slurm/slurm.conf
+  notify: Restart slurmctld
+
+- name: burst_buffer.conf
+  template:
+    src: burst_buffer.conf.j2
+    dest: /etc/slurm/burst_buffer.conf
+  notify: Restart slurmctld
+
+- name: slurmdbd.conf
+  template:
+    src: slurmdbd.conf.j2
+    dest: /etc/slurm/slurmdbd.conf
+  notify: Restart slurmdbd
+
+- name: Start slurmctld
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items:
+    - slurmdbd
+    - slurmctld
