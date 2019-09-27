@@ -82,5 +82,7 @@ JobCompType=jobcomp/none
 #AccountingStorageUser=
 #
 # COMPUTE NODES
-NodeName=slurm-cpu[1-2] Procs=2 State=UNKNOWN
+{% for host in groups['slurm_workers'] %}
+NodeName={{ hostvars[host].ansible_hostname }} Procs={{ hostvars[host].ansible_processor_vcpus }} State=UNKNOWN
+{% endfor %}
 PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
